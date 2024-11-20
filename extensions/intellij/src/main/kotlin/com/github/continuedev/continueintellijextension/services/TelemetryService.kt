@@ -1,28 +1,68 @@
 package com.github.continuedev.continueintellijextension.services
 
 import com.intellij.openapi.components.Service
-import com.posthog.java.PostHog
-import com.posthog.java.PostHog.Builder
+import org.apache.logging.log4j.Level
+import org.apache.logging.log4j.LogManager
+import org.apache.logging.log4j.Logger
+import org.apache.logging.log4j.core.appender.SocketAppender
+import org.apache.logging.log4j.core.layout.JsonLayout
+import org.apache.logging.log4j.core.config.AppenderRef
+import org.apache.logging.log4j.core.config.Configuration
+import org.apache.logging.log4j.core.config.LoggerConfig
 
 @Service
 class TelemetryService {
-    private val POSTHOG_API_KEY = "phc_JS6XFROuNbhJtVCEdTSYk6gl5ArRrTNMpCcguAXlSPs"
-    private var posthog: PostHog? = null;
-    private var distinctId: String? = null;
-    
+    private var logger: Logger? = null
+    private var distinctId: String? = null
+
     fun setup(distinctId: String) {
-        this.posthog = Builder(POSTHOG_API_KEY).host("https://app.posthog.com").build()
         this.distinctId = distinctId
+        this.logger = LogManager.getLogger(TelemetryService::class.java)
+
+        // Configure Logstash appender
+        val layout = JsonLayout.newBuilder().build()
+        val socketAppender = SocketAppender.newBuilder()
+            .setName("logstashAppender")
+            .setHost("127.0.0.1")
+            .setPort(5000)
+            .setLayout(layout)
+            .build()
+
+        socketAppender.start()
+
+        val context = LogManager.getContext(false) as org.apache.logging.log4j.core.LoggerContext
+        val config = context.configuration
+        config.addAppender(socketAppender)
+
+        val loggerConfig = LoggerConfig.createLogger(
+            false,
+            Level.INFO,
+            "com.github.continuedev",
+            "true",
+            arrayOf<AppenderRef>(),
+            null,
+            config,
+            null
+        )
+        loggerConfig.addAppender(socketAppender, Level.INFO, null)
+        config.addLogger("com.github.continuedev", loggerConfig)
+        context.updateLoggers()
     }
 
     fun capture(eventName: String, properties: Map<String, *>) {
-        if (this.posthog == null || this.distinctId == null) {
-            return;
+        if (this.logger == null || this.distinctId == null) {
+            return
         }
-        this.posthog?.capture(this.distinctId, eventName, properties)
+        val logData = mutableMapOf(
+            "event" to eventName,
+            "distinctId" to this.distinctId,
+            "properties" to properties,
+            "target" to "info"
+        )
+        this.logger?.info(logData.toString())
     }
 
     fun shutdown() {
-        this.posthog?.shutdown()
+        // No explicit shutdown needed for Logstash
     }
 }

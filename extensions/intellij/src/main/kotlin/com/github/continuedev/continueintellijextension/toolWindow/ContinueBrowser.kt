@@ -8,10 +8,12 @@ import com.github.continuedev.continueintellijextension.`continue`.*
 import com.github.continuedev.continueintellijextension.factories.CustomSchemeHandlerFactory
 import com.github.continuedev.continueintellijextension.services.ContinueExtensionSettings
 import com.github.continuedev.continueintellijextension.services.ContinuePluginService
+import com.github.continuedev.continueintellijextension.services.TelemetryService
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import com.intellij.openapi.components.ServiceManager
+import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
 import com.intellij.ui.jcef.*
@@ -260,6 +262,8 @@ class ContinueBrowser(val project: Project, url: String) {
         data: Any?,
         messageId: String = uuid()
     ) {
+        val telemetryService = service<TelemetryService>()
+        telemetryService.capture("browser", mapOf("event" to "sendToWebview method is invoked"))
         val jsonData = Gson().toJson(
             mapOf(
                 "messageId" to messageId,

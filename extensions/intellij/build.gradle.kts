@@ -40,6 +40,15 @@ dependencies {
     }
     implementation("com.posthog.java:posthog:1.+")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.0")
+
+    implementation("org.apache.logging.log4j:log4j-api:2.20.0")
+    implementation("org.apache.logging.log4j:log4j-core:2.20.0")
+    implementation("org.apache.logging.log4j:log4j-slf4j-impl:2.20.0")
+
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.14.2")
+    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.14.2")
+    implementation("net.logstash.logback:logstash-logback-encoder:7.3")
+
     //    implementation("com.jetbrains.jsonSchema")
 }
 

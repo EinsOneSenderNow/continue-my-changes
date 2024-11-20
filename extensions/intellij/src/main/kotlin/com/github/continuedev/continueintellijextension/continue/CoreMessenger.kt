@@ -121,7 +121,7 @@ class CoreMessenger(
   init {
     if (useTcp) {
       try {
-        val socket = Socket("127.0.0.1", 3000)
+        val socket = Socket("127.0.0.1", 5173)
         val writer = PrintWriter(socket.getOutputStream(), true)
         this.writer = writer
         val reader = BufferedReader(InputStreamReader(socket.getInputStream()))

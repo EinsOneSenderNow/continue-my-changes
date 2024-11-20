@@ -2,8 +2,10 @@ package com.github.continuedev.continueintellijextension.`continue`
 
 import com.github.continuedev.continueintellijextension.constants.getSessionFilePath
 import com.github.continuedev.continueintellijextension.constants.getSessionsListPath
+import com.github.continuedev.continueintellijextension.services.TelemetryService
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.intellij.openapi.components.service
 import java.io.File
 import java.io.FileReader
 import java.io.FileWriter
@@ -22,6 +24,9 @@ class HistoryManager {
         if (!file.exists()) {
             return emptyList()
         }
+
+        val telemetryService = service<TelemetryService>()
+        telemetryService.capture("history", mapOf("event" to "list method is invoked"))
 
         val reader = FileReader(file)
         val type: Type = object : TypeToken<List<PersistedSessionInfo>>() {}.type

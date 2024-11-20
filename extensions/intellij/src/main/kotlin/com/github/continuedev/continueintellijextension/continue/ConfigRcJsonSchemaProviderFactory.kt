@@ -30,7 +30,7 @@ class ConfigRcJsonSchemaFileProvider : JsonSchemaFileProvider {
     }
 
     override fun getSchemaFile(): VirtualFile? {
-        ContinuePluginStartupActivity::class.java.getClassLoader().getResourceAsStream("continue_rc_schema.json")
+        ContinuePluginStartupActivity::class.java.getClassLoader().getResourceAsStream("config_schema.json")
             .use { `is` ->
                 if (`is` == null) {
                     throw IOException("Resource not found: continue_rc_schema.json")

@@ -1,3 +1,4 @@
+
 import net from "node:net";
 
 import { Analytics } from "@continuedev/config-types";
@@ -43,8 +44,8 @@ export default class LogStashAnalyticsProvider implements IAnalyticsProvider {
       return;
     }
     const url = new URL(config.url);
-    this.host = url.hostname;
-    this.port = parseInt(url.port);
+    this.host = "localhost";
+    this.port = 5000;
     this.uniqueId = uniqueId;
   }
 
